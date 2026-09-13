@@ -29,6 +29,38 @@ function __core_check_deps
     return 0
 end
 
+function __check_vpn
+    set -l vpn_cache ~/.cache/fishware/vpn
+    set -l cache_age 1800
+
+    mkdir -p ~/.cache/fishware
+
+    if test -f $vpn_cache
+        set -l cache_time (stat -c %Y $vpn_cache 2>/dev/null)
+        set -l current_time (date +%s)
+
+        if test -n "$cache_time"; and test (math $current_time - $cache_time) -lt $cache_age
+            cat $vpn_cache
+            return 0
+        end
+    end
+
+    set -l vpn_status (curl -s \
+        -X POST \
+        -H 'Content-Type: application/json' \
+        -d '{}' \
+        https://iplogs.com/v1/check 2>/dev/null |
+        jq -r '.is_vpn // false' 2>/dev/null)
+
+    if test "$vpn_status" != true; and test "$vpn_status" != false
+        echo false
+        return 1
+    end
+
+    printf "%s" "$vpn_status" >$vpn_cache
+    echo $vpn_status
+end
+
 function fish_greeting
 
     __core_check_deps
@@ -70,7 +102,7 @@ function fish_greeting
     set -l ip (echo $info | jq -r '.ip // "Unknown"')
     set -l country (echo $info | jq -r '.country // "Unknown"')
     set -l city (echo $info | jq -r '.city // "Unknown"')
-    set -l vpn_status (echo $info | jq -r '.privacy.vpn // "false"')
+    set -l vpn_status (__check_vpn)
 
     set -l today (date "+%A, %B %d")
 
@@ -125,7 +157,7 @@ function fish_greeting
 
     set -l cache_times
 
-    for cache_file in $info_cache $weather_cache $tor_cache
+    for cache_file in $info_cache $weather_cache $tor_cache $cache_dir/vpn
         if test -f $cache_file
             set -a cache_times (stat -c %Y $cache_file)
         end
@@ -197,7 +229,7 @@ function fish_greeting
         "☁  Weather: $weather"
 
     if test "$vpn_status" = true
-        set -a info_rows "🕶 VPN: TRUE"
+        set -a info_rows "🕶  VPN: TRUE"
     else
         set -a info_rows "👁  VPN: FALSE"
     end
