@@ -5,9 +5,18 @@
 ## Required packages:
 
 ```
-Required packages will be prompted for install once you run a command that requires them. (Mostly for modules)
+The fish shell.
+Other required packages will be prompted for install once you run a command that requires them. (Mostly for modules)
 ```
+## install the fish shell
 
+```
+sudo pacman -S fish
+```
+> make it your main shell:
+```
+chsh -s /usr/bin/fish
+```
 ## Installation script:
 
 ```fish
