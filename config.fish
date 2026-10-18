@@ -375,9 +375,9 @@ end
 # ---------------------------------------------------------
 
 function !upd
-    # description: Update Arch Linux and installed packages
+    # description: Update Omarchy and installed packages
     # category: SYS
-    sudo pacman -Syu --noconfirm
+    omarchy update --noconfirm
 end
 
 function !clean

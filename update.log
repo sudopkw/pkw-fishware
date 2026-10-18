@@ -25,3 +25,5 @@
   > You're welcome!
  + Variables now in Modules! Less bloat in !help, everyone's happy. Help section per module.
   > Example usage: !tor help, !url help, !cobalt help, etc.
+ ── 18th of October 2026
+ + Updated the !upd command to OMARCHY's update command rather than using pacman
